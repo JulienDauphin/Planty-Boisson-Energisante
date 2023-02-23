@@ -1,0 +1,7 @@
+.page-header {
+   display: none;
+}
+
+.boxed-layout #wrap .container {
+   padding-right: 10px;
+}
