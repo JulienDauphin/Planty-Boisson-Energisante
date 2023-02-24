@@ -17,24 +17,27 @@
 
 <body <?php body_class(); ?> <?php oceanwp_schema_markup( 'html' ); ?>>
 
-	<?php wp_body_open(); ?>
+<?php wp_body_open(); ?>
 
-	<?php do_action( 'ocean_before_outer_wrap' ); ?>
+<?php do_action( 'ocean_before_outer_wrap' ); ?>
 
-	<div id="outer-wrap" class="site clr">
+<div id="outer-wrap" class="site clr">
 
-		<a class="skip-link screen-reader-text" href="#main"><?php oceanwp_theme_strings( 'owp-string-header-skip-link', 'oceanwp' ); ?></a>
+	<a class="skip-link screen-reader-text" href="#main"><?php oceanwp_theme_strings( 'owp-string-header-skip-link', 'oceanwp' ); ?></a>
 
-		<?php do_action( 'ocean_before_wrap' ); ?>
+	<?php do_action( 'ocean_before_wrap' ); ?>
 
-		<div id="wrap" class="clr">
+	<div id="wrap" class="clr">
 
-			<?php do_action( 'ocean_top_bar' ); ?>
+	<?php do_action( 'ocean_top_bar' ); ?>
 
-			<?php do_action( 'ocean_header' ); ?>
+	<?php do_action( 'ocean_header' ); ?>
 
-			<?php do_action( 'ocean_before_main' ); ?>
+		<?php do_action( 'ocean_before_main' ); ?>
 
-			<main id="main" class="site-main clr"<?php oceanwp_schema_markup( 'main' ); ?> role="main">
+		<main id="main" class="site-main clr"<?php oceanwp_schema_markup( 'main' ); ?> role="main">
 
-				<?php do_action( 'ocean_page_header' ); ?>
+			<?php do_action( 'ocean_page_header' ); 
+
+
+?>

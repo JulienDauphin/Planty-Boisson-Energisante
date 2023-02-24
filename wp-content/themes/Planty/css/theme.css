@@ -1,7 +1,175 @@
+.boxed-layout #wrap .container {
+   padding-right: 10px;
+}
 .page-header {
    display: none;
 }
-
 .boxed-layout #wrap .container {
-   padding-right: 10px;
+   padding-right: 15px;
+}
+.gouts {
+  display:flex;
+  flex-wrap : wrap;
+}
+
+.fraise {
+	margin: 0 30px 40px 0
+}
+
+.pamplemousse {
+  margin: 0 0 40px 0
+}
+
+.framboise {
+  margin: 0 30px 30px 0
+}
+
+.citron {
+  margin: 0 0 30px 0
+}
+
+.mentions {
+  font-size : 16px;
+  font-weight: 400;
+  font-family: syne;
+}
+
+#frm_form_1_container {
+  width:383px;
+}
+
+#field_9jv0r1 {
+  height:237px;
+  border-radius: 7px;
+  border: unset;
+}
+#field_29yf4d, #field_qh4icy {
+  height: 71px;
+  border-radius: 7px;
+  border: unset;
+}
+  
+#field_qh4icy_label {
+  font-family: syne;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 24px;
+  color:black;
+  margin-bottom:5px;
+}
+#field_9jv0r1_label{
+  font-family: syne;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 24px;
+  color:black;
+  margin-bottom:5px;
+}
+
+#field_29yf4d_label{
+  font-family: syne;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 24px;
+  color:black;
+  margin-bottom:5px;
+}
+
+.frm_button_submit {
+  color:black;
+}
+
+.product-count{
+   display:flex;
+ }
+ 
+ .boutons {
+   width:43px;
+   height:50px;
+   margin-right: 6px;
+ }
+ 
+ .minus-button, .plus-button {
+   width:36px;
+   height:28px;
+   border-style: none;
+   background-color: #E0B9B4;
+   font-size: 14px;
+   font-weight: 600;
+   color:white;
+ }
+
+ .minus-button {
+   border-top-right-radius: 10px ;
+   border-bottom : solid white 1px;
+ }
+
+ .plus-button {
+   border-bottom-right-radius: 10px ;
+   border-top : solid white 1px;
+ }
+ 
+ .count-textbox {
+   width:50px;
+   height:56px;
+   text-align:center;
+   border-style: none;
+   border-radius: 10px 0 0 10px;
+   font-size: 16px;
+   line-height: 19.36px;
+   font-weight: 400;
+ }
+
+.form-ok {
+   display: flex;
+   width: 192px;
+  }
+
+.okay {
+   background-color: #E0B9B4;
+   width: 100px;
+   height: 56px;
+   border-style: none;
+   border-radius: 7px;
+   font-size: 16px;
+   line-height: 19.36px;
+   font-weight: 400;
+   color:white;
+
+}
+
+.container-commande {
+   display:flex;
+   flex-direction: column;
+   width: 192px;
+}
+
+
+.container-commande img {
+margin-bottom: 10px;
+margin-right: 10px;
+width: 192px;
+
+}
+
+.double-colonne {
+	display:flex;
+	flex-direction:row;
+	justify-content:center;
+	flex-wrap : wrap;
+	column-gap: 60px;
+	margin-bottom:10px;
+	}
+
+#field_ntwda, #field_um51g, #field_jw750,#field_lhisl, #field_nexkd, #field_n9qqj {
+    height: 67px;
+    border-radius: 7px;
+    border: unset;
+}
+
+#field_ntwda_label, #field_um51g_label,
+#field_jw750_label,#field_lhisl_label, #field_nexkd_label, #field_n9qqj_label{
+color:white;
+	font-family:syne;
+	font-size:20px;
 }
