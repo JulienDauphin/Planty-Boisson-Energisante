@@ -4,9 +4,12 @@
 .page-header {
    display: none;
 }
-.boxed-layout #wrap .container {
-   padding-right: 15px;
+
+#menu-base {
+  padding:unset;
+  margin:unset;
 }
+
 .gouts {
   display:flex;
   flex-wrap : wrap;
@@ -155,11 +158,21 @@ width: 192px;
 .double-colonne {
 	display:flex;
 	flex-direction:row;
-	justify-content:center;
+  justify-content: center;
 	flex-wrap : wrap;
 	column-gap: 60px;
 	margin-bottom:10px;
 	}
+
+.double-colonne h2{
+  text-align: left;
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  color:white;
+  margin-bottom: 15px;
+}
 
 #field_ntwda, #field_um51g, #field_jw750,#field_lhisl, #field_nexkd, #field_n9qqj {
     height: 67px;
@@ -170,6 +183,47 @@ width: 192px;
 #field_ntwda_label, #field_um51g_label,
 #field_jw750_label,#field_lhisl_label, #field_nexkd_label, #field_n9qqj_label{
 color:white;
-	font-family:syne;
+	font-family: 'Syne', sans-serif;
 	font-size:20px;
+}
+
+.text-wrap:hover {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 15,6;
+}
+
+.text-wrap {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 19,2;
+}
+
+.vertical-line {
+  border: solid 1px white;
+  height: 95%;
+}
+
+@media screen and (max-width:950px){
+  .vertical-line {
+    display:none;
+  }
+  
+}
+
+#menu-commander{
+  height: 81px;
+  padding: 0 50px 0 50px;
+  border: unset;
+  color:white;
+  background-color:#DC9F96;
+}
+
+#menu-commander a{
+  color:white;
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 19,2;
 }
