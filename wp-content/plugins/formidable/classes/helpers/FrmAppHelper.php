@@ -16,7 +16,7 @@ class FrmAppHelper {
 	/**
 	 * @since 2.0
 	 */
-	public static $plug_version = '6.0.1';
+	public static $plug_version = '6.2.3';
 
 	/**
 	 * @since 1.07.02
@@ -377,13 +377,40 @@ class FrmAppHelper {
 	}
 
 	/**
-	 * Check for the IP address in several places
-	 * Used by [ip] shortcode
+	 * Check for the IP address in several places (when custom headers are enabled).
+	 * Used by [ip] shortcode.
 	 *
 	 * @return string The IP address of the current user
 	 */
 	public static function get_ip_address() {
-		$ip_options = array(
+		$ip_options = self::should_use_custom_header_ip() ? self::get_custom_header_keys_for_ip() : array( 'REMOTE_ADDR' );
+		$ip         = '';
+
+		foreach ( $ip_options as $key ) {
+			if ( ! isset( $_SERVER[ $key ] ) ) {
+				continue;
+			}
+
+			$key = self::get_server_value( $key );
+			foreach ( explode( ',', $key ) as $ip ) {
+				$ip = trim( $ip ); // Just to be safe.
+
+				if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) !== false ) {
+					return sanitize_text_field( $ip );
+				}
+			}
+		}
+
+		return sanitize_text_field( $ip );
+	}
+
+	/**
+	 * @since 6.1
+	 *
+	 * @return array
+	 */
+	public static function get_custom_header_keys_for_ip() {
+		return array(
 			'HTTP_CLIENT_IP',
 			'HTTP_CF_CONNECTING_IP',
 			'HTTP_X_FORWARDED_FOR',
@@ -394,23 +421,31 @@ class FrmAppHelper {
 			'HTTP_FORWARDED',
 			'REMOTE_ADDR',
 		);
-		$ip = '';
-		foreach ( $ip_options as $key ) {
-			if ( ! isset( $_SERVER[ $key ] ) ) {
-				continue;
-			}
+	}
 
-			$key = self::get_server_value( $key );
-			foreach ( explode( ',', $key ) as $ip ) {
-				$ip = trim( $ip ); // just to be safe.
+	/**
+	 * Check if we should check every HTTP header or just $_SERVER['REMOTE_ADDR'].
+	 * The other HTTP headers can be spoofed so this isn't recommended.
+	 * But in some cases (like reverse proxies), the IP may be empty if you use $_SERVER['REMOTE_ADDR'].
+	 *
+	 * @since 6.1
+	 *
+	 * @return bool
+	 */
+	private static function should_use_custom_header_ip() {
+		$settings                    = self::get_settings();
+		$should_use_custom_header_ip = ! $settings->no_ips && $settings->custom_header_ip;
 
-				if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) !== false ) {
-					return sanitize_text_field( $ip );
-				}
-			}
-		}
-
-		return sanitize_text_field( $ip );
+		/**
+		 * Filter whether to check spoofable HTTP headers.
+		 * This uses the custom_header_ip setting, but it is hidden if the GDPR option is also on.
+		 * As the IP is still checked for blacklist checks, someone with the GDPR option may still want to enable this when behind a reverse proxy.
+		 *
+		 * @since 6.1
+		 *
+		 * @param bool $should_use_custom_header_ip
+		 */
+		return apply_filters( 'frm_use_custom_header_ip', $should_use_custom_header_ip );
 	}
 
 	public static function get_param( $param, $default = '', $src = 'get', $sanitize = '' ) {
@@ -1079,7 +1114,9 @@ class FrmAppHelper {
 			ob_start();
 		}
 
-		$echo_function();
+		if ( is_callable( $echo_function ) ) {
+			$echo_function();
+		}
 
 		if ( ! $echo ) {
 			$return = ob_get_contents();
@@ -2358,7 +2395,7 @@ class FrmAppHelper {
 	 * @return string $time_ago
 	 */
 	public static function human_time_diff( $from, $to = '', $levels = 1 ) {
-		if ( empty( $to ) ) {
+		if ( empty( $to ) && 0 !== $to ) {
 			$now = new DateTime();
 		} else {
 			$now = new DateTime( '@' . $to );
@@ -2705,6 +2742,9 @@ class FrmAppHelper {
 	 * all data to json.
 	 *
 	 * @since 4.02.03
+	 *
+	 * @param array|string $value
+	 * @return void
 	 */
 	public static function unserialize_or_decode( &$value ) {
 		if ( is_array( $value ) ) {
@@ -2712,10 +2752,37 @@ class FrmAppHelper {
 		}
 
 		if ( is_serialized( $value ) ) {
-			$value = maybe_unserialize( $value );
+			$value = self::maybe_unserialize_array( $value );
 		} else {
 			$value = self::maybe_json_decode( $value, false );
 		}
+	}
+
+	/**
+	 * Safely unserialize an array if necessary.
+	 * This function doesn't actually use unserialize. The string is parsed instead.
+	 *
+	 * @since 6.2
+	 *
+	 * @param mixed $value
+	 * @return mixed
+	 */
+	public static function maybe_unserialize_array( $value ) {
+		if ( ! is_string( $value ) ) {
+			return $value;
+		}
+
+		// Since we only expect an array, skip anything that doesn't start with a:.
+		if ( ! is_serialized( $value ) || 'a:' !== substr( $value, 0, 2 ) ) {
+			return $value;
+		}
+
+		$parsed = FrmSerializedStringParserHelper::get()->parse( $value );
+		if ( is_array( $parsed ) ) {
+			$value = $parsed;
+		}
+
+		return $value;
 	}
 
 	/**
@@ -2744,6 +2811,34 @@ class FrmAppHelper {
 		}
 
 		return $string;
+	}
+
+	/**
+	 * @since 6.2.3
+	 *
+	 * @param string $value
+	 * @return string
+	 */
+	public static function maybe_utf8_encode( $value ) {
+		$from_format = 'ISO-8859-1';
+		$to_format   = 'UTF-8';
+
+		if ( function_exists( 'mb_check_encoding' ) && function_exists( 'mb_convert_encoding' ) ) {
+			if ( mb_check_encoding( $value, $from_format ) ) {
+				return mb_convert_encoding( $value, $to_format, $from_format );
+			}
+			return $value;
+		}
+
+		if ( function_exists( 'iconv' ) ) {
+			$converted = iconv( $from_format, $to_format, $value );
+			// Value is false if $value is not ISO-8859-1.
+			if ( false !== $converted ) {
+				return $converted;
+			}
+		}
+
+		return $value;
 	}
 
 	/**
@@ -3722,172 +3817,11 @@ class FrmAppHelper {
 	}
 
 	/**
-	 * Used to filter shortcode in text widgets
-	 *
-	 * @deprecated 2.5.4
-	 * @codeCoverageIgnore
-	 */
-	public static function widget_text_filter_callback( $matches ) {
-		return FrmDeprecated::widget_text_filter_callback( $matches );
-	}
-
-	/**
 	 * @deprecated 3.01
 	 * @codeCoverageIgnore
 	 */
 	public static function sanitize_array( &$values ) {
 		FrmDeprecated::sanitize_array( $values );
-	}
-
-	/**
-	 * @param array $settings
-	 * @param string $group
-	 *
-	 * @since 2.0.6
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 */
-	public static function save_settings( $settings, $group ) {
-		return FrmDeprecated::save_settings( $settings, $group );
-	}
-
-	/**
-	 * @since 2.0.4
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 */
-	public static function save_json_post( $settings ) {
-		return FrmDeprecated::save_json_post( $settings );
-	}
-
-	/**
-	 * @since 2.0
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 *
-	 * @param string $cache_key The unique name for this cache
-	 * @param string $group The name of the cache group
-	 * @param string $query If blank, don't run a db call
-	 * @param string $type The wpdb function to use with this query
-	 *
-	 * @return mixed $results The cache or query results
-	 */
-	public static function check_cache( $cache_key, $group = '', $query = '', $type = 'get_var', $time = 300 ) {
-		return FrmDeprecated::check_cache( $cache_key, $group, $query, $type, $time );
-	}
-
-	/**
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 */
-	public static function set_cache( $cache_key, $results, $group = '', $time = 300 ) {
-		return FrmDeprecated::set_cache( $cache_key, $results, $group, $time );
-	}
-
-	/**
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 */
-	public static function add_key_to_group_cache( $key, $group ) {
-		FrmDeprecated::add_key_to_group_cache( $key, $group );
-	}
-
-	/**
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 */
-	public static function get_group_cached_keys( $group ) {
-		return FrmDeprecated::get_group_cached_keys( $group );
-	}
-
-	/**
-	 * @since 2.0
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 * @return mixed The cached value or false
-	 */
-	public static function check_cache_and_transient( $cache_key ) {
-		return FrmDeprecated::check_cache( $cache_key );
-	}
-
-	/**
-	 * @since 2.0
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 *
-	 * @param string $cache_key
-	 */
-	public static function delete_cache_and_transient( $cache_key, $group = 'default' ) {
-		FrmDeprecated::delete_cache_and_transient( $cache_key, $group );
-	}
-
-	/**
-	 * @since 2.0
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 *
-	 * @param string $group The name of the cache group
-	 */
-	public static function cache_delete_group( $group ) {
-		FrmDeprecated::cache_delete_group( $group );
-	}
-
-	/**
-	 * @since 1.07.10
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 *
-	 * @param string $term The value to escape
-	 *
-	 * @return string The escaped value
-	 */
-	public static function esc_like( $term ) {
-		return FrmDeprecated::esc_like( $term );
-	}
-
-	/**
-	 * @param string $order_query
-	 *
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 */
-	public static function esc_order( $order_query ) {
-		return FrmDeprecated::esc_order( $order_query );
-	}
-
-	/**
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 */
-	public static function esc_order_by( &$order_by ) {
-		FrmDeprecated::esc_order_by( $order_by );
-	}
-
-	/**
-	 * @param string $limit
-	 *
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 */
-	public static function esc_limit( $limit ) {
-		return FrmDeprecated::esc_limit( $limit );
-	}
-
-	/**
-	 * @since 2.0
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 */
-	public static function prepare_array_values( $array, $type = '%s' ) {
-		return FrmDeprecated::prepare_array_values( $array, $type );
-	}
-
-	/**
-	 * @deprecated 2.05.06
-	 * @codeCoverageIgnore
-	 */
-	public static function prepend_and_or_where( $starts_with = ' WHERE ', $where = '' ) {
-		return FrmDeprecated::prepend_and_or_where( $starts_with, $where );
 	}
 
 	/**
@@ -3903,9 +3837,9 @@ class FrmAppHelper {
 
 	/**
 	 * @since 4.07
-	 * @deprecated x.x
+	 * @deprecated 6.0
 	 */
 	public static function renewal_message() {
-		_deprecated_function( __METHOD__, 'x.x', 'FrmProAddonsController::renewal_message' );
+		_deprecated_function( __METHOD__, '6.0', 'FrmProAddonsController::renewal_message' );
 	}
 }

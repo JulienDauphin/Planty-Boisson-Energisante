@@ -3,6 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'You are not allowed to call this page directly.' );
 }
 
+#[\AllowDynamicProperties]
 class FrmSettings {
 	public $option_name = 'frm_options';
 	public $menu;
@@ -38,6 +39,7 @@ class FrmSettings {
 	public $re_multi;
 
 	public $no_ips;
+	public $custom_header_ip;
 	public $current_form = 0;
 	public $tracking;
 
@@ -119,14 +121,20 @@ class FrmSettings {
 			'login_msg'        => __( 'You do not have permission to view this form.', 'formidable' ),
 			'admin_permission' => __( 'You do not have permission to do that', 'formidable' ),
 
-			'email_to' => '[admin_email]',
-			'no_ips'   => 0,
-			'tracking' => FrmAppHelper::pro_is_installed(),
+			'email_to'         => '[admin_email]',
+			'no_ips'           => 0,
+			'custom_header_ip' => false, // Use false by default. We show a warning when this is unset. Once global settings have been saved, this gets saved
+			'tracking'         => FrmAppHelper::pro_is_installed(),
 
+			// Normally custom CSS is a string. A false value is used when nothing has been set.
+			// When it is false, we try to use the old custom_key value from the default style's post_content array.
 			'custom_css' => false,
 		);
 	}
 
+	/**
+	 * @return void
+	 */
 	private function set_default_options() {
 		$this->fill_captcha_settings();
 
@@ -215,6 +223,9 @@ class FrmSettings {
 		return $value;
 	}
 
+	/**
+	 * @return void
+	 */
 	private function fill_captcha_settings() {
 		if ( ! isset( $this->active_captcha ) ) {
 			$this->active_captcha = 'recaptcha';
@@ -260,6 +271,8 @@ class FrmSettings {
 	 * Get values that may be shown on the front-end without an override in the form settings.
 	 *
 	 * @since 3.06.01
+	 *
+	 * @return string[]
 	 */
 	public function translatable_strings() {
 		return array(
@@ -274,6 +287,8 @@ class FrmSettings {
 	 * Allow strings to be filtered when a specific form may be displaying them.
 	 *
 	 * @since 3.06.01
+	 *
+	 * @return void
 	 */
 	public function maybe_filter_for_form( $args ) {
 		if ( isset( $args['current_form'] ) && is_numeric( $args['current_form'] ) ) {
@@ -285,10 +300,19 @@ class FrmSettings {
 		}
 	}
 
+	/**
+	 * @param array $params
+	 * @param array $errors
+	 */
 	public function validate( $params, $errors ) {
 		return apply_filters( 'frm_validate_settings', $errors, $params );
 	}
 
+	/**
+	 * @param array $params
+	 *
+	 * @return void
+	 */
 	public function update( $params ) {
 		$this->fill_with_defaults( $params );
 		$this->update_settings( $params );
@@ -310,6 +334,9 @@ class FrmSettings {
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	private function update_settings( $params ) {
 		$this->active_captcha   = $params['frm_active_captcha'];
 		$this->hcaptcha_pubkey  = trim( $params['frm_hcaptcha_pubkey'] );
@@ -322,12 +349,15 @@ class FrmSettings {
 		$this->load_style       = $params['frm_load_style'];
 		$this->custom_css       = $params['frm_custom_css'];
 
-		$checkboxes = array( 'mu_menu', 're_multi', 'use_html', 'jquery_css', 'accordion_js', 'fade_form', 'no_ips', 'tracking', 'admin_bar' );
+		$checkboxes = array( 'mu_menu', 're_multi', 'use_html', 'jquery_css', 'accordion_js', 'fade_form', 'no_ips', 'custom_header_ip', 'tracking', 'admin_bar' );
 		foreach ( $checkboxes as $set ) {
-			$this->$set = isset( $params[ 'frm_' . $set ] ) ? $params[ 'frm_' . $set ] : 0;
+			$this->$set = isset( $params[ 'frm_' . $set ] ) ? absint( $params[ 'frm_' . $set ] ) : 0;
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	private function update_roles( $params ) {
 		global $wp_roles;
 
@@ -351,6 +381,9 @@ class FrmSettings {
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function store() {
 		// Save the posted value in the database
 

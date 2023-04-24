@@ -1,203 +1,208 @@
-.boxed-layout #wrap .container {
-   padding-right: 10px;
-}
-.page-header {
-   display: none;
-}
-
 #menu-base {
-  padding:unset;
-  margin:unset;
+  padding: unset;
+  margin: unset;
 }
 
-.gouts {
-  display:flex;
-  flex-wrap : wrap;
-}
-
-.fraise {
-	margin: 0 30px 40px 0
-}
-
-.pamplemousse {
-  margin: 0 0 40px 0
-}
-
-.framboise {
-  margin: 0 30px 30px 0
-}
-
-.citron {
-  margin: 0 0 30px 0
-}
-
-.mentions {
-  font-size : 16px;
+/* Bouton Commander */
+#bouton_commander {
+  width: 198px;
+  height: 55px;
+  border-style: none;
+  background-color: #E0B9B4;
+  font-size: 15px;
   font-weight: 400;
-  font-family: syne;
+  line-height: 37px;
+  font-family: 'Syne', sans-serif;
+  color: white;
+  padding : 9px 57px;
 }
 
+/* Mentions légales Pied de page */
+.mentions {
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Syne', sans-serif;
+}
+
+/* Formulaire Nous contacter */
 #frm_form_1_container {
-  width:383px;
+  width: 383px;
 }
 
 #field_9jv0r1 {
-  height:237px;
+  height: 237px;
   border-radius: 7px;
   border: unset;
 }
-#field_29yf4d, #field_qh4icy {
+
+#field_29yf4d,
+#field_qh4icy {
   height: 71px;
   border-radius: 7px;
   border: unset;
 }
-  
+
 #field_qh4icy_label {
-  font-family: syne;
+  font-family: 'Syne', sans-serif;
   font-size: 20px;
   font-weight: 400;
   line-height: 24px;
-  color:black;
-  margin-bottom:5px;
-}
-#field_9jv0r1_label{
-  font-family: syne;
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 24px;
-  color:black;
-  margin-bottom:5px;
+  color: black;
+  margin-bottom: 5px;
 }
 
-#field_29yf4d_label{
-  font-family: syne;
+#field_9jv0r1_label {
+  font-family: 'Syne', sans-serif;
   font-size: 20px;
   font-weight: 400;
   line-height: 24px;
-  color:black;
-  margin-bottom:5px;
+  color: black;
+  margin-bottom: 5px;
+}
+
+#field_29yf4d_label {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 24px;
+  color: black;
+  margin-bottom: 5px;
 }
 
 .frm_button_submit {
-  color:black;
+  color: black;
 }
 
-.product-count{
-   display:flex;
- }
- 
- .boutons {
-   width:43px;
-   height:50px;
-   margin-right: 6px;
- }
- 
- .minus-button, .plus-button {
-   width:36px;
-   height:28px;
-   border-style: none;
-   background-color: #E0B9B4;
-   font-size: 14px;
-   font-weight: 600;
-   color:white;
- }
+.product-count {
+  display: flex;
+}
 
- .minus-button {
-   border-top-right-radius: 10px ;
-   border-bottom : solid white 1px;
- }
+.boutons {
+  width: 43px;
+  height: 50px;
+  margin-right: 6px;
+}
 
- .plus-button {
-   border-bottom-right-radius: 10px ;
-   border-top : solid white 1px;
- }
- 
- .count-textbox {
-   width:50px;
-   height:56px;
-   text-align:center;
-   border-style: none;
-   border-radius: 10px 0 0 10px;
-   font-size: 16px;
-   line-height: 19.36px;
-   font-weight: 400;
- }
+/* ESPACE VOTRE COMMANDE */
 
+/* Boutons + et - */
+.minus-button,
+.plus-button {
+  width: 36px;
+  height: 28px;
+  border-style: none;
+  background-color: #dc9f96;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.minus-button {
+  border-top-right-radius: 5px;
+  border-bottom: solid white 1px;
+}
+
+.plus-button {
+  border-bottom-right-radius: 5px;
+  border-top: solid white 1px;
+}
+
+/* Quantités */
+.count-textbox {
+  width: 50px;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.quantite {
+  width: 70px;
+  height: 56px;
+  text-align: center;
+  border-style: none;
+  border-radius: 5px 0 0 5px;
+  font-size: 16px;
+  line-height: 19.36px;
+  font-weight: 400;
+  z-index: 1;
+}
+
+/* Bouton OK */
 .form-ok {
-   display: flex;
-   width: 192px;
-  }
+  display: flex;
+  width: 192px;
+}
 
 .okay {
-   background-color: #E0B9B4;
-   width: 100px;
-   height: 56px;
-   border-style: none;
-   border-radius: 7px;
-   font-size: 16px;
-   line-height: 19.36px;
-   font-weight: 400;
-   color:white;
-
+  background-color: #E0B9B4;
+  width: 100px;
+  height: 56px;
+  border-style: none;
+  border-radius: 5px;
+  font-size: 15px;
+  font-weight: 400;
+  font-family: 'Syne', sans-serif;
+  color: white;
 }
 
+/* Formulaire Commander */
 .container-commande {
-   display:flex;
-   flex-direction: column;
-   width: 192px;
+  display: flex;
+  flex-direction: column;
+  width: 192px;
 }
-
 
 .container-commande img {
-margin-bottom: 10px;
-margin-right: 10px;
-width: 192px;
-
+  margin-bottom: 10px;
+  margin-right: 10px;
+  width: 192px;
 }
 
 .double-colonne {
-	display:flex;
-	flex-direction:row;
+  display: flex;
+  flex-direction: row;
   justify-content: center;
-	flex-wrap : wrap;
-	column-gap: 60px;
-	margin-bottom:10px;
-	}
+  flex-wrap: wrap;
+  column-gap: 60px;
+  margin-bottom: 10px;
+}
 
-.double-colonne h2{
+.double-colonne h2 {
   text-align: left;
   font-size: 30px;
   line-height: 36px;
   font-weight: 700;
   font-family: 'Syne', sans-serif;
-  color:white;
+  color: white;
   margin-bottom: 15px;
 }
 
-#field_ntwda, #field_um51g, #field_jw750,#field_lhisl, #field_nexkd, #field_n9qqj {
-    height: 67px;
-    border-radius: 7px;
-    border: unset;
+#field_ntwda,
+#field_um51g,
+#field_jw750,
+#field_lhisl,
+#field_nexkd,
+#field_n9qqj {
+  height: 67px;
+  border-radius: 7px;
+  border: unset;
 }
 
-#field_ntwda_label, #field_um51g_label,
-#field_jw750_label,#field_lhisl_label, #field_nexkd_label, #field_n9qqj_label{
-color:white;
-	font-family: 'Syne', sans-serif;
-	font-size:20px;
+#field_ntwda_label,
+#field_um51g_label,
+#field_jw750_label,
+#field_lhisl_label,
+#field_nexkd_label,
+#field_n9qqj_label {
+  color: white;
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
 }
 
-.text-wrap:hover {
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 15,6;
-}
-
+/* Menu */
 .text-wrap {
   font-family: 'Syne', sans-serif;
   font-size: 16px;
   font-weight: 400;
-  line-height: 19,2;
 }
 
 .vertical-line {
@@ -205,25 +210,39 @@ color:white;
   height: 95%;
 }
 
-@media screen and (max-width:950px){
-  .vertical-line {
-    display:none;
-  }
-  
+/* Bouton Commander */
+
+#site-navigation #menu-item-659 a {
+background-color : #DC9F96;
 }
 
-#menu-commander{
+#site-navigation #menu-item-659 a:hover {
+background-color : #c02e44;
+}
+
+#menu-item-659 .text-wrap {
+color: white;
+}
+
+/* Media Queries */
+@media screen and (max-width:950px) {
+  .vertical-line {
+    display: none;
+  }
+}
+
+#menu-commander {
   height: 81px;
   padding: 0 50px 0 50px;
   border: unset;
-  color:white;
-  background-color:#DC9F96;
+  color: white;
+  background-color: #DC9F96;
 }
 
-#menu-commander a{
-  color:white;
+#menu-commander a {
+  color: white;
   font-family: 'Syne', sans-serif;
   font-size: 16px;
   font-weight: 400;
-  line-height: 19,2;
+  line-height: 19;
 }
